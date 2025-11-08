@@ -1,20 +1,30 @@
 from pygame import *
 import socket
+from socket import AF_INET,SOCK_STREAM
 import json
 from threading import Thread
+from menu import CtWindow
 
-# ---ПУГАМЕ НАЛАШТУВАННЯ ---
+win= CtWindow()
+win.mainloop()
+port = win.port
+host = win.host
+client = socket.socket(AF_INET,SOCK_STREAM)
+client.connect((host,port))
+client.setblocking(False)
+
+# --- НАЛАШТУВАННЯ ---
 WIDTH, HEIGHT = 800, 600
 init()
 screen = display.set_mode((WIDTH, HEIGHT))
 clock = time.Clock()
 display.set_caption("Пінг-Понг")
+
+
 # ---СЕРВЕР ---
 def connect_to_server():
     while True:
         try:
-            client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            client.connect(('localhost', 8080)) # ---- Підключення до сервера
             buffer = ""
             game_state = {}
             my_id = int(client.recv(24).decode())
