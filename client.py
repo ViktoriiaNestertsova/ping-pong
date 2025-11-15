@@ -32,7 +32,7 @@ def connect_to_server():
         except:
             pass
 
-
+#123
 def receive():
     global buffer, game_state, game_over
     while not game_over:
