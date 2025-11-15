@@ -11,15 +11,16 @@ port = win.port
 host = win.host
 client = socket.socket(AF_INET,SOCK_STREAM)
 client.connect((host,port))
-client.setblocking(False)
+
 
 # --- НАЛАШТУВАННЯ ---
-WIDTH, HEIGHT = 1000, 700
+WIDTH, HEIGHT = 800, 600
 init()
 screen = display.set_mode((WIDTH, HEIGHT))
 clock = time.Clock()
 display.set_caption("Пінг-Понг")
-
+buffer = ""
+game_state= {}
 
 # ---СЕРВЕР ---
 def connect_to_server():
@@ -27,12 +28,15 @@ def connect_to_server():
         try:
             buffer = ""
             game_state = {}
-            my_id = int(client.recv(24).decode())
+            data = client.recv(24).decode().strip()
+            if data.isdigit():
+                my_id = int(data)
+            else:
+                continue
             return my_id, game_state, buffer, client
         except:
             pass
 
-#123
 def receive():
     global buffer, game_state, game_over
     while not game_over:
