@@ -14,7 +14,7 @@ client.connect((host,port))
 client.setblocking(False)
 
 # --- НАЛАШТУВАННЯ ---
-WIDTH, HEIGHT = 800, 600
+WIDTH, HEIGHT = 1000, 700
 init()
 screen = display.set_mode((WIDTH, HEIGHT))
 clock = time.Clock()
@@ -50,9 +50,7 @@ def receive():
 # --- ШРИФТИ ---
 font_win = font.Font(None, 72)
 font_main = font.Font(None, 36)
-# --- ЗОБРАЖЕННЯ ----
-
-# --- ЗВУКИ ---
+font_small = font.Font(None, 28)
 
 # --- ГРА ---
 game_over = False
@@ -60,6 +58,26 @@ winner = None
 you_winner = None
 my_id, game_state, buffer, client = connect_to_server()
 Thread(target=receive, daemon=True).start()
+
+#функція для малювання сітки
+def draw_net():
+    segment_height = 20
+    gap = 10
+    for y in range(0, HEIGHT, segment_height + gap):
+        draw.rect(screen, (60, 70, 100), (WIDTH//2 - 2, y, 4, segment_height))
+
+#функція для малювання закруглених прямокутників
+def draw_rounded_rect(surface, color, rect, radius=10):
+    x, y, width, height = rect
+    draw.rect(surface, color, (x + radius, y, width - 2*radius, height))
+    draw.rect(surface, color, (x, y + radius, width, height - 2*radius))
+    draw.circle(surface, color, (x + radius, y + radius), radius)
+    draw.circle(surface, color, (x + width - radius, y + radius), radius)
+    draw.circle(surface, color, (x + radius, y + height - radius), radius)
+    draw.circle(surface, color, (x + width - radius, y + height - radius), radius)
+
+
+
 while True:
     for e in event.get():
         if e.type == QUIT:
@@ -83,39 +101,52 @@ while True:
 
         if you_winner:
             text = "Ти переміг!"
+            color = (255, 215, 0)
         else:
             text = "Пощастить наступним разом!"
+            color = (200, 100, 100)
 
         win_text = font_win.render(text, True, (255, 215, 0))
         text_rect = win_text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
         screen.blit(win_text, text_rect)
 
-        text = font_win.render('К - рестарт', True, (255, 215, 0))
-        text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 120))
-        screen.blit(text, text_rect)
+        #покращений текст рестарту
+        restart_text = font_main.render('Натисни R для рестарту', True, (240, 240, 240))
+        restart_rect = restart_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 50))
+        screen.blit(restart_text, restart_rect)
 
         display.update()
         continue  # Блокує гру після перемоги
 
     if game_state:
-        screen.fill((30, 30, 30))
-        draw.rect(screen, (0, 255, 0), (20, game_state['paddles']['0'], 20, 100))
-        draw.rect(screen, (255, 0, 255), (WIDTH - 40, game_state['paddles']['1'], 20, 100))
+        #покращений фон та додано сітку
+        screen.fill((20, 25, 45))
+        draw_net()
+
+        #покращені платформи з закругленими кутами
+        draw_rounded_rect(screen, (0, 255, 150), (20, game_state['paddles']['0'], 20, 100), 15)
+        draw_rounded_rect(screen, (255, 50, 255), (WIDTH - 40, game_state['paddles']['1'], 20, 100), 15)
+
+        #покращений м'яч
         draw.circle(screen, (255, 255, 255), (game_state['ball']['x'], game_state['ball']['y']), 10)
-        score_text = font_main.render(f"{game_state['scores'][0]} : {game_state['scores'][1]}", True, (255, 255, 255))
-        screen.blit(score_text, (WIDTH // 2 -25, 20))
+
+        #покращене табло з рахунком
+        score_bg = (30, 35, 60)
+        draw_rounded_rect(screen, score_bg, (WIDTH // 2 - 80, 15, 160, 60), 15)
+        score_text = font_main.render(f"{game_state['scores'][0]}   {game_state['scores'][1]}", True, (255, 255, 255))
+        screen.blit(score_text, (WIDTH // 2 - score_text.get_width() // 2, 30))
 
         if game_state['sound_event']:
             if game_state['sound_event'] == 'wall_hit':
-                # звук відбиття м'ячика від стін
                 pass
             if game_state['sound_event'] == 'platform_hit':
-                # звук відбиття м'ячика від платформи
                 pass
 
     else:
-        wating_text = font_main.render(f"Очікування гравців...", True, (255, 255, 255))
-        screen.blit(wating_text, (WIDTH // 2 - 25, 20))
+        #покращений екран очікування
+        screen.fill((20, 25, 45))
+        wating_text = font_main.render("Очікування гравців...", True, (255, 255, 255))
+        screen.blit(wating_text, (WIDTH // 2 - wating_text.get_width() // 2, HEIGHT // 2))
 
     display.update()
     clock.tick(60)
