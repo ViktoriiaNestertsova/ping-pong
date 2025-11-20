@@ -22,6 +22,12 @@ display.set_caption("Пінг-Понг")
 buffer = ""
 game_state= {}
 
+try:
+    lose_image = image.load("youlose.png")
+    lose_image = transform.scale(lose_image, (300, 300))
+except:
+    lose_image = None
+
 # ---СЕРВЕР ---
 def connect_to_server():
     while True:
@@ -106,17 +112,27 @@ while True:
         if you_winner:
             text = "Ти переміг!"
             color = (255, 215, 0)
+
+            # Показувати текст перемоги
+            win_text = font_win.render(text, True, color)
+            text_rect = win_text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+            screen.blit(win_text, text_rect)
+
         else:
-            text = "Пощастить наступним разом!"
+            text = "Ти програв"
             color = (200, 100, 100)
 
-        win_text = font_win.render(text, True, (255, 215, 0))
-        text_rect = win_text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
-        screen.blit(win_text, text_rect)
+            if lose_image:
+                image_rect = lose_image.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 80))
+                screen.blit(lose_image, image_rect)
 
-        #покращений текст рестарту
+            #Показуємо текст під фото
+            win_text = font_win.render(text, True, color)
+            text_rect = win_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 100))
+            screen.blit(win_text, text_rect)
+
         restart_text = font_main.render('Натисни R для рестарту', True, (240, 240, 240))
-        restart_rect = restart_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 50))
+        restart_rect = restart_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 150))
         screen.blit(restart_text, restart_rect)
 
         display.update()
