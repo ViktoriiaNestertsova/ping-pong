@@ -5,6 +5,13 @@ import json
 from threading import Thread
 from menu import CtWindow
 
+mixer.init()
+
+aut = mixer.Sound("аут.mp3")
+aut.set_volume(100)
+plat = mixer.Sound("платформа.mp3")
+plat.set_volume(100)
+
 win= CtWindow()
 win.mainloop()
 port = win.port
@@ -156,11 +163,15 @@ while True:
         score_text = font_main.render(f"{game_state['scores'][0]}   {game_state['scores'][1]}", True, (255, 255, 255))
         screen.blit(score_text, (WIDTH // 2 - score_text.get_width() // 2, 30))
 
+
+
         if game_state['sound_event']:
-            if game_state['sound_event'] == 'wall_hit':
-                pass
-            if game_state['sound_event'] == 'platform_hit':
-                pass
+            if game_state['sound_event'] == "wall_hit": #відбиття від стінки
+                g = mixer.Sound("аут.mp3")
+                g.play()
+            if game_state['sound_event'] == "platform_hit": #від платформи
+                h = mixer.Sound("платформа.mp3")
+                h.play()
 
     else:
         #покращений екран очікування
