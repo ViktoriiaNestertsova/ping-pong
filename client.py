@@ -35,6 +35,12 @@ try:
 except:
     lose_image = None
 
+try:
+    winer_image = image.load("youwin.png")
+    winer_image = transform.scale(winer_image, (300, 300))
+except:
+    winer_image = None
+
 # ---СЕРВЕР ---
 def connect_to_server():
     while True:
@@ -75,6 +81,7 @@ winner = None
 you_winner = None
 my_id, game_state, buffer, client = connect_to_server()
 Thread(target=receive, daemon=True).start()
+last_sound_event = None
 
 #функція для малювання сітки
 def draw_net():
@@ -119,10 +126,13 @@ while True:
         if you_winner:
             text = "Ти переміг!"
             color = (255, 215, 0)
+            if winer_image:
+                image_rect = winer_image.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 80))
+                screen.blit(winer_image, image_rect)
 
             # Показувати текст перемоги
             win_text = font_win.render(text, True, color)
-            text_rect = win_text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+            text_rect = win_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 100))
             screen.blit(win_text, text_rect)
 
         else:
@@ -163,15 +173,13 @@ while True:
         score_text = font_main.render(f"{game_state['scores'][0]}   {game_state['scores'][1]}", True, (255, 255, 255))
         screen.blit(score_text, (WIDTH // 2 - score_text.get_width() // 2, 30))
 
+        if game_state.get('sound_event') and game_state['sound_event'] != last_sound_event:
+            if game_state['sound_event'] == "wall_hit":  # відбиття від стінки
+                aut.play()
+            elif game_state['sound_event'] == "platform_hit":  # від платформи
+                pass
 
-
-        if game_state['sound_event']:
-            if game_state['sound_event'] == "wall_hit": #відбиття від стінки
-                g = mixer.Sound("аут.mp3")
-                g.play()
-            if game_state['sound_event'] == "platform_hit": #від платформи
-                h = mixer.Sound("платформа.mp3")
-                h.play()
+            last_sound_event = game_state['sound_event']
 
     else:
         #покращений екран очікування
