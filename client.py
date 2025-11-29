@@ -108,6 +108,8 @@ while True:
             exit()
 
     if "countdown" in game_state and game_state["countdown"] > 0:
+
+
         screen.fill((0, 0, 0))
         countdown_text = font.Font(None, 72).render(str(game_state["countdown"]), True, (255, 255, 255))
         screen.blit(countdown_text, (WIDTH // 2 - 20, HEIGHT // 2 - 30))
@@ -175,14 +177,18 @@ while True:
 
         if game_state.get('sound_event') and game_state['sound_event'] != last_sound_event:
             if game_state['sound_event'] == "wall_hit":  # відбиття від стінки
-                aut.play()
-            elif game_state['sound_event'] == "platform_hit":  # від платформи
                 pass
+            elif game_state['sound_event'] == "platform_hit":  # від платформи
+                plat.play()
 
             last_sound_event = game_state['sound_event']
 
     else:
         #покращений екран очікування
+
+        mixer.music.load("menumusic.wav")
+        mixer.music.play(-1)
+
         screen.fill((20, 25, 45))
         wating_text = font_main.render("Очікування гравців...", True, (255, 255, 255))
         screen.blit(wating_text, (WIDTH // 2 - wating_text.get_width() // 2, HEIGHT // 2))

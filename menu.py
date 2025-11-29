@@ -4,6 +4,7 @@ from PIL import Image
 
 
 
+
 class CtWindow(CTk):
     def __init__(self):
         super().__init__()
@@ -31,9 +32,6 @@ class CtWindow(CTk):
         self.port_entry.pack(padx=20, anchor='w', fill='x')
 
         CTkButton(self, text='Приєднатися', command=self.open_game, height=50).pack(pady=15, padx=20, fill='x')
-
-
-
 
 
     def open_game(self):
